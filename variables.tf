@@ -18,3 +18,6 @@ variable "inference_image" {}
 variable "model_s3_path" {}
 variable "instance_type" {}
 variable "initial_instance_count" {}
+variable "github_owner" {}
+variable "github_repo" {}
+variable "github_branch" {}

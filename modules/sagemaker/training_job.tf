@@ -1,9 +1,9 @@
 resource "aws_sagemaker_training_job" "training" {
-  name = "${var.env}-training-job-${random_string.suffix.result}"
+  name     = "${var.env}-training-job-${random_string.suffix.result}"
   role_arn = var.sagemaker_role_arn
 
   algorithm_specification {
-    training_image     = var.training_image
+    training_image      = var.training_image
     training_input_mode = "File"
   }
 

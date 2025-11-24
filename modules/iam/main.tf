@@ -5,25 +5,23 @@ resource "aws_iam_role" "codebuild_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
-      Action = "sts:AssumeRole",
+      Effect    = "Allow",
+      Action    = "sts:AssumeRole",
       Principal = { Service = "codebuild.amazonaws.com" }
     }]
   })
 }
-# Attach policies (example managed)
-resource "aws_iam_role_policy_attachment" "codebuild_attach1" {
-  role       = aws_iam_role.codebuild_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
+# Inline IAM role policy using templatefile()
+resource "aws_iam_role_policy" "codebuild_role_policy" {
+  name = "codebuild-role-policy-${var.env}"
+  role = aws_iam_role.codebuild_role.id
+
+  policy = templatefile("${path.module}/codebuild_policy.json", {
+    S3_BUCKET_NAME = var.artifact_bucket
+  })
 }
-resource "aws_iam_role_policy_attachment" "codebuild_attach2" {
-  role       = aws_iam_role.codebuild_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
-}
-resource "aws_iam_role_policy_attachment" "codebuild_attach3" {
-  role       = aws_iam_role.codebuild_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
-}
+
 
 # CodePipeline Role
 resource "aws_iam_role" "codepipeline_role" {
@@ -32,8 +30,8 @@ resource "aws_iam_role" "codepipeline_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
-      Action = "sts:AssumeRole",
+      Effect    = "Allow",
+      Action    = "sts:AssumeRole",
       Principal = { Service = "codepipeline.amazonaws.com" }
     }]
   })
@@ -50,8 +48,8 @@ resource "aws_iam_role" "sagemaker" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
-      Action = "sts:AssumeRole",
+      Effect    = "Allow",
+      Action    = "sts:AssumeRole",
       Principal = { Service = "sagemaker.amazonaws.com" }
     }]
   })
@@ -59,8 +57,8 @@ resource "aws_iam_role" "sagemaker" {
 
 # Optional fine-grained policy
 resource "aws_iam_role_policy" "sagemaker_inline" {
-  name   = "sagemaker-inline-policy-${var.env}"
-  role   = aws_iam_role.sagemaker.id
+  name = "sagemaker-inline-policy-${var.env}"
+  role = aws_iam_role.sagemaker.id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -70,8 +68,8 @@ resource "aws_iam_role_policy" "sagemaker_inline" {
         Resource = "*"
       },
       {
-        Effect   = "Allow",
-        Action   = [
+        Effect = "Allow",
+        Action = [
           "sagemaker:CreateTrainingJob",
           "sagemaker:CreateModel",
           "sagemaker:CreateProcessingJob",

@@ -27,31 +27,38 @@ module "ml_ecr" {
 
 # 🔐 3) IAM Roles (SageMaker, Pipeline, Build, etc.)
 module "ml_iam" {
-  source = "./modules/iam"
-  env    = var.env
+  source          = "./modules/iam"
+  env             = var.env
+  artifact_bucket = module.ml_bucket.bucket_name
 }
 
-# # 🏗️ 4) CodeBuild for Docker Build + Training
-# module "ml_codebuild" {
-#   source             = "./modules/codebuild"
-#   env                = var.env
-#   github_repo        = var.github_repo       # e.g. "user/ml-model-training"
-#   buildspec          = "buildspec.yml"
-#   ecr_repo           = module.ml_ecr.repo_url
-#   codebuild_role_arn = module.ml_iam.codebuild_role_arn
-# }
+# 🏗️ 4) CodeBuild for Docker Build + Training
+module "ml_codebuild" {
+  source             = "./modules/codebuild"
+  region             = var.region
+  account_id         = var.account_id
+  env                = var.env
+  github_owner       = var.github_owner
+  github_repo        = var.github_repo # e.g. "user/ml-model-training"
+  buildspec          = "buildspec.yml"
+  ecr_repo_name      = module.ml_ecr.repo_name
+  codebuild_role_arn = module.ml_iam.codebuild_role_arn
+}
 
-# # 📦 5) CodePipeline to trigger when GitHub changes
-# module "ml_codepipeline" {
-#   source                  = "./modules/codepipeline"
-#   env                     = var.env
-#   artifact_bucket         = module.ml_bucket.bucket
-#   github_repo_id          = var.github_repo       # e.g. "user/ml-model-training"
-#   branch                  = var.branch            # e.g. "main"
-#   codestar_connection_arn = var.codestar_arn
-#   pipeline_role_arn       = module.ml_iam.pipeline_role_arn
-#   build_project_name      = module.ml_codebuild.project_name
-# }
+
+
+
+# 📦 5) CodePipeline to trigger when GitHub changes
+module "ml_codepipeline" {
+  source             = "./modules/codepipeline"
+  env                = var.env
+  artifact_bucket    = module.ml_bucket.bucket_name
+  github_owner       = var.github_owner
+  github_repo        = var.github_repo   # e.g. "user/ml-model-training"
+  github_branch      = var.github_branch # e.g. "main"
+  pipeline_role_arn  = module.ml_iam.codepipeline_role_arn
+  build_project_name = module.ml_codebuild.project_name
+}
 
 # # 🧠 6) SageMaker Model + Endpoint
 # module "sagemaker" {
