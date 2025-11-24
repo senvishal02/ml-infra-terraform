@@ -1,0 +1,13 @@
+variable "env" {}
+variable "sagemaker_role_arn" {}
+variable "training_image" {}
+variable "training_s3_uri" {}
+variable "output_s3_uri" {}
+variable "training_instance_type" {}
+variable "training_instance_count" {}
+variable "volume_size_gb" {}
+variable "max_runtime_seconds" {}
+variable "inference_image" {}
+variable "model_s3_path" {}
+variable "instance_type" {}
+variable "initial_instance_count" {}

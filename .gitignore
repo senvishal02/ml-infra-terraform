@@ -1,0 +1,57 @@
+# -----------------------------
+# Terraform & Terragrunt .gitignore
+# -----------------------------
+
+### Terraform Files ###
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform plan output
+*.tfplan
+
+# Crash log files
+crash.log
+terraform.log
+
+# Ignores hidden folders created by Terraform
+.terraform/
+.terraform/*
+
+# Lock files
+.terraform.lock.hcl
+
+# Sensitive information
+secrets.auto.tfvars
+*.auto.tfvars
+
+### Terragrunt Files ###
+terragrunt-debug.log
+
+### OS / Editor / IDE ###
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs (IntelliJ, PyCharm, GoLand, etc.)
+.idea/
+
+# Others
+*.swp
+*.swo
+
+# Python virtual env (if used for automation/scripts)
+venv/
+.env/
